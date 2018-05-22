@@ -96,7 +96,7 @@ export default class MapWithClustering extends Component {
 
     if (this.props.clustering && this.superCluster) {
       const bBox = getBounds(this.state.currentRegion);
-      const zoom = this.getBoundsZoomLevel(bBox, [h(50), w(50)]);
+      const zoom = getBoundsZoomLevel(bBox, [h(50), w(50)]);
       const clusters = await this.superCluster.getClusters(
         [bBox[0], bBox[1], bBox[2], bBox[3]],
         zoom,
