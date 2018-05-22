@@ -4,7 +4,8 @@
   "description": "Map clustering both for Android and iOS",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "repository": {
     "type": "git",
@@ -31,8 +32,8 @@
   "dependencies": {
     "@mapbox/geo-viewport": "^0.2.2",
     "prop-types": "^15.6.0",
+    "ramda": "^0.25.0",
     "react-native-dimension": "^1.0.6",
-    "supercluster": "^3.0.1",
-    "ramda": "^0.25.0"
+    "supercluster": "^3.0.1"
   }
 }
