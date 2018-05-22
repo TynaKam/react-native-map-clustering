@@ -50,8 +50,7 @@ export default class MapWithClustering extends Component {
         shoudDoClustering(region, this.state.currentRegion)
         this.calculateClustersForMap(region);
       }
-    }
-  };
+  }
 
   createMarkersOnMap = () => {
     const markers = [];
