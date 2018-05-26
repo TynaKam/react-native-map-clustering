@@ -6,32 +6,45 @@ import SuperCluster from 'supercluster';
 import CustomMarker from './CustomMarker';
 import { dissoc } from 'ramda';
 import { getBounds, getBoundsZoomLevel, shoudDoClustering } from './clusteringUtils';
+
 const removeChildrenFromProps = dissoc('children');
 
 const MAX_ZOOM = 20;
 const MIN_ZOOM = 1;
 
+const INIT_REGION = {
+  latitude: 49.743823,
+  longitude: 15.344798,
+  latitudeDelta: 0.0922,
+  longitudeDelta: 0.0421,
+};
+
 export default class MapWithClustering extends Component {
-  state = {
-    currentRegion: this.props.region,
-    clusterStyle: {
-      borderRadius: w(10),
-      backgroundColor: this.props.clusterColor,
-      borderColor: this.props.clusterBorderColor,
-      borderWidth: this.props.clusterBorderWidth,
-      width: w(10),
-      height: w(10),
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    clusterTextStyle: {
-      fontSize: this.props.clusterTextSize,
-      color: this.props.clusterTextColor,
-      fontWeight: 'bold',
-    },
-  };
+  constructor(props1) {
+    super(props1);
+    this.state = {
+      currentRegion: INIT_REGION,
+      clusterStyle: {
+        borderRadius: w(10),
+        backgroundColor: this.props.clusterColor,
+        borderColor: this.props.clusterBorderColor,
+        borderWidth: this.props.clusterBorderWidth,
+        width: w(10),
+        height: w(10),
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      clusterTextStyle: {
+        fontSize: this.props.clusterTextSize,
+        color: this.props.clusterTextColor,
+        fontWeight: 'bold',
+      },
+    };
+    this.loadPossition = this.loadPossition.bind(this);
+  }
 
   componentDidMount() {
+    this.loadPossition();
     this.createMarkersOnMap();
   }
 
@@ -39,17 +52,29 @@ export default class MapWithClustering extends Component {
     this.createMarkersOnMap();
   }
 
-  componentWillReceiveProps({ region }) {
-    if (region !== this.state.region) {
-      this.setState({ currentRegion: region });
-    }
-  }
-
   onRegionChangeComplete = (region) => {
     if (region.longitudeDelta <= 80 && shoudDoClustering(region, this.state.currentRegion)) {
-        shoudDoClustering(region, this.state.currentRegion)
-        this.calculateClustersForMap(region);
-      }
+      shoudDoClustering(region, this.state.currentRegion);
+      this.calculateClustersForMap(region);
+    }
+  };
+
+  loadPossition() {
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        const { latitude, longitude } = coords;
+        this.setState({
+          currentRegion: {
+            latitude,
+            longitude,
+            latitudeDelta: 0.005,
+            longitudeDelta: 0.001,
+          },
+        });
+      },
+      error => alert(JSON.stringify(error)),
+      { timeout: 20000, maximumAge: 1000 },
+    );
   }
 
   createMarkersOnMap = () => {
@@ -128,14 +153,16 @@ export default class MapWithClustering extends Component {
   };
 
   render() {
+    const mapProps = removeChildrenFromProps(this.props);
     return (
       <MapView
-        {...removeChildrenFromProps(this.props)}
+        initialRegion={INIT_REGION}
         ref={(ref) => {
           this.root = ref;
         }}
         region={this.state.currentRegion}
         onRegionChangeComplete={this.onRegionChangeComplete}
+        {...mapProps}
       >
         {this.state.clusteredMarkers}
         {this.state.otherChildren}
