@@ -4,7 +4,7 @@ import MapView from 'react-native-maps';
 import { width as w, height as h } from 'react-native-dimension';
 import SuperCluster from 'supercluster';
 import CustomMarker from './CustomMarker';
-import { dissoc } from 'ramda';
+import { dissoc, equals, not, o } from 'ramda';
 import { getBounds, getBoundsZoomLevel, shoudDoClustering } from './clusteringUtils';
 
 const removeChildrenFromProps = dissoc('children');
@@ -48,8 +48,8 @@ export default class MapWithClustering extends Component {
     this.createMarkersOnMap();
   }
 
-  componentWillReceiveProps() {
-    this.createMarkersOnMap();
+  componentWillReceiveProps({ children }) {
+    this.createMarkersOnMap(children);
   }
 
   onRegionChangeComplete = (region) => {
@@ -77,11 +77,11 @@ export default class MapWithClustering extends Component {
     );
   }
 
-  createMarkersOnMap = () => {
+  createMarkersOnMap = (children) => {
     const markers = [];
     const otherChildren = [];
 
-    React.Children.forEach(this.props.children, (marker) => {
+    React.Children.forEach(children, (marker) => {
       if (marker.props && marker.props.coordinate) {
         markers.push({
           marker,
