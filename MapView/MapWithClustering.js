@@ -43,6 +43,10 @@ export default class MapWithClustering extends Component {
     this.loadPossition = this.loadPossition.bind(this);
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return true;
+  }
+
   componentDidMount() {
     this.loadPossition();
     this.createMarkersOnMap();
@@ -63,6 +67,7 @@ export default class MapWithClustering extends Component {
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
         const { latitude, longitude } = coords;
+        this.props.onPossitionRecieved(coords);
         this.setState({
           currentRegion: {
             latitude,
