@@ -49,7 +49,7 @@ export default class MapWithClustering extends Component {
 
   componentDidMount() {
     this.loadPossition();
-    this.createMarkersOnMap();
+    this.createMarkersOnMap(this.props.children);
   }
 
   componentWillReceiveProps({ children }) {
@@ -80,6 +80,10 @@ export default class MapWithClustering extends Component {
       error => alert(JSON.stringify(error)),
       { timeout: 20000, maximumAge: 1000 },
     );
+  }
+
+  animateToLocation(coords) {
+    this.root.animateToCoordinate(coords, 5);
   }
 
   createMarkersOnMap = (children) => {
